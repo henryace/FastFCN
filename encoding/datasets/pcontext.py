@@ -26,13 +26,25 @@ class ContextSegmentation(BaseDataset):
         #from detail import mask
         root = os.path.join(root, self.BASE_DIR)
         annFile = os.path.join(root, 'trainval_merged.json')
+        #
+        #/home/mhc/.encoding/data/VOCdevkit/VOC2010/JPEGImages
+        #run voc2010 input images
+        #
         imgDir = os.path.join(root, 'JPEGImages')
+        #
         # training mode
+        # annFile = root + 'trainval_merged.json'
+        # imgDir = root + 'JPEGImages'
+        # annFile = root + 'trainval_merged.json'
+        # split = "train"
+        #
         self.detail = Detail(annFile, imgDir, split)
         self.transform = transform
         self.target_transform = target_transform
         self.ids = self.detail.getImgs()
+        #
         # generate masks
+        #
         self._mapping = np.sort(np.array([
             0, 2, 259, 260, 415, 324, 9, 258, 144, 18, 19, 22, 
             23, 397, 25, 284, 158, 159, 416, 33, 162, 420, 454, 295, 296, 
@@ -41,6 +53,9 @@ class ContextSegmentation(BaseDataset):
             98, 187, 104, 105, 366, 189, 368, 113, 115]))
         self._key = np.array(range(len(self._mapping))).astype('uint8')
         mask_file = os.path.join(root, self.split+'.pth')
+        #
+        # train.pth
+        #
         print('mask_file:', mask_file)
         if os.path.exists(mask_file):
             self.masks = torch.load(mask_file)

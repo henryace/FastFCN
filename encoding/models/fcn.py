@@ -40,6 +40,10 @@ class FCN(BaseNet):
     """
     def __init__(self, nclass, backbone, aux=True, se_loss=False, norm_layer=nn.BatchNorm2d, **kwargs):
         super(FCN, self).__init__(nclass, backbone, aux, se_loss, norm_layer=norm_layer, **kwargs)
+    #
+    # conv4_x 1024
+    # conv5_x 2048
+    #
         self.head = FCNHead(2048, nclass, norm_layer)
         if aux:
             self.auxlayer = FCNHead(1024, nclass, norm_layer)
@@ -71,6 +75,9 @@ class FCNHead(nn.Module):
     def forward(self, x):
         return self.conv5(x)
 
+# *args是可變的positional arguments列表
+# **kwargs是可變的keyword arguments列表
+# positional arguments 必須位於 keyword arguments之前
 
 def get_fcn(dataset='pascal_voc', backbone='resnet50', pretrained=False,
             root='~/.encoding/models', **kwargs):

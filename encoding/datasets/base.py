@@ -12,6 +12,12 @@ import torch.utils.data as data
 
 from PIL import Image, ImageOps, ImageFilter
 
+#
+# Read 20190522
+# BaseDataset : prepare parent class for dataloader
+# CMH
+#
+
 __all__ = ['BaseDataset', 'test_batchify_fn']
 
 class BaseDataset(data.Dataset):
@@ -42,10 +48,19 @@ class BaseDataset(data.Dataset):
     def make_pred(self, x):
         return x + self.pred_offset
 
+    #
+    # default crop_size=480
+    # short_size = outsize = self.crop_size = crop_size
+    # scale
+    # center crop
+    # CMH
+    #
+
     def _val_sync_transform(self, img, mask):
         outsize = self.crop_size
         short_size = outsize
         w, h = img.size
+        # image resize
         if w > h:
             oh = short_size
             ow = int(1.0 * w * oh / h)
@@ -63,6 +78,16 @@ class BaseDataset(data.Dataset):
         # final transform
         return img, self._mask_transform(mask)
 
+    #
+    # _sync_transform : transform
+    # random mirror
+    # random scale (short edge from 480 to 720)
+    # pad crop
+    # random crop crop_size
+    # gaussian blur as in PSP
+    # CMH
+    #
+
     def _sync_transform(self, img, mask):
         # random mirror
         if random.random() < 0.5:
@@ -70,7 +95,15 @@ class BaseDataset(data.Dataset):
             mask = mask.transpose(Image.FLIP_LEFT_RIGHT)
         crop_size = self.crop_size
         # random scale (short edge from 480 to 720)
+        # not sure why ? 
+        # short_size = random.randint(int(self.base_size*0.5), int(self.base_size*2.0))
+        #
+        # random.randint(a,b) retrun a interger N (a<=N<=b)
+        # base_size = 520
+        # CMH
+        #
         short_size = random.randint(int(self.base_size*0.5), int(self.base_size*2.0))
+        print("random scale : %d" % short_size)
         w, h = img.size
         if h > w:
             ow = short_size
